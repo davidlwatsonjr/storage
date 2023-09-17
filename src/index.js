@@ -36,82 +36,66 @@ app.get("/ping", async (req, res) => {
   res.send("pong");
 });
 
-app.get("/files", async (req, res) => {
+app.get("/files", async (req, res, next) => {
   const { q } = req.query;
   try {
     const { status, data } = await listFiles(q);
     const { files } = data;
     res.status(status).send({ count: files.length, files });
   } catch (err) {
-    const { response } = err;
-    const { status, data } = response;
-    const { error } = data;
-    const { message } = error;
-    console.error(`${status} - ${message}`);
-    res.status(status).send(message);
+    next(err);
   }
 });
 
-app.get("/files/:id", async (req, res) => {
+app.get("/files/:id", async (req, res, next) => {
   const { id } = req.params;
   try {
     const response = await getFile(id);
     const { status, data } = response;
     res.status(status).send(data);
   } catch (err) {
-    const { response } = err;
-    const { status, data } = response;
-    const { error } = data;
-    const { message } = error;
-    console.error(`${status} - ${message}`);
-    res.status(status).send(message);
+    next(err);
   }
 });
 
-app.post("/files", async (req, res) => {
+app.post("/files", async (req, res, next) => {
   const { body, name } = req.body;
   try {
     const { status, data } = await uploadFile(body, name);
     res.status(status).send(data);
   } catch (err) {
-    const { response } = err;
-    const { status, data } = response;
-    const { error } = data;
-    const { message } = error;
-    console.error(`${status} - ${message}`);
-    res.status(status).send(message);
+    next(err);
   }
 });
 
-app.put("/files/:id", async (req, res) => {
+app.put("/files/:id", async (req, res, next) => {
   const { id } = req.params;
   const { body } = req.body;
   try {
     const { status, data } = await updateFile(id, body);
     res.status(status).send(data);
   } catch (err) {
-    const { response } = err;
-    const { status, data } = response;
-    const { error } = data;
-    const { message } = error;
-    console.error(`${status} - ${message}`);
-    res.status(status).send(message);
+    next(err);
   }
 });
 
-app.delete("/files/:id", async (req, res) => {
+app.delete("/files/:id", async (req, res, next) => {
   const { id } = req.params;
   try {
     const { status, data } = await deleteFile(id);
     res.status(status).send(data);
   } catch (err) {
-    const { response } = err;
-    const { status, data } = response;
-    const { error } = data;
-    const { message } = error;
-    console.error(`${status} - ${message}`);
-    res.status(status).send(message);
+    next(err);
   }
+});
+
+app.use((err, req, res, next) => {
+  const { response } = err;
+  const { status, data } = response;
+  const { error } = data;
+  const { message } = error;
+  console.error(`${status} - ${message}`);
+  res.status(status).send(message);
 });
 
 const PORT = process.env.PORT || 8080;
