@@ -4,6 +4,8 @@
   "description": "File storage service",
   "main": "src/index.js",
   "scripts": {
+    "docker:build": "docker build -t storage .",
+    "docker:start": "docker run -p 8080:8080 storage",
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
