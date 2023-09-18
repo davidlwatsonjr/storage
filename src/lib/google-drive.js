@@ -3,6 +3,7 @@ const { google } = require("googleapis");
 const pkey = require("../../pk.json");
 
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
+const GOOGLE_DRIVE_UPLOAD_LIMIT = "5mb";
 
 let googleDriveClient;
 const initializeGoogleDriveClient = async () => {
@@ -21,7 +22,7 @@ const initializeGoogleDriveClient = async () => {
 };
 
 const listFiles = async (q) => {
-  googleDriveClient || await initializeGoogleDriveClient();
+  googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.list({
     q,
     fields: "nextPageToken, files(id, name)",
@@ -29,7 +30,7 @@ const listFiles = async (q) => {
 };
 
 const getFile = async (fileId) => {
-  googleDriveClient || await initializeGoogleDriveClient();
+  googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.get({
     fileId,
     alt: "media",
@@ -37,7 +38,7 @@ const getFile = async (fileId) => {
 };
 
 const uploadFile = async (body, name) => {
-  googleDriveClient || await initializeGoogleDriveClient();
+  googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.create({
     media: { body },
     fields: "id",
@@ -46,7 +47,7 @@ const uploadFile = async (body, name) => {
 };
 
 const updateFile = async (fileId, body) => {
-  googleDriveClient || await initializeGoogleDriveClient();
+  googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.update({
     media: { body },
     fileId,
@@ -54,11 +55,12 @@ const updateFile = async (fileId, body) => {
 };
 
 const deleteFile = async (fileId) => {
-  googleDriveClient || await initializeGoogleDriveClient();
+  googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.delete({ fileId });
 };
 
 module.exports = {
+  GOOGLE_DRIVE_UPLOAD_LIMIT,
   listFiles,
   getFile,
   uploadFile,

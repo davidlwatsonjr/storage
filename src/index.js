@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const {
+  GOOGLE_DRIVE_UPLOAD_LIMIT,
   listFiles,
   getFile,
   uploadFile,
@@ -10,7 +11,7 @@ const {
 } = require("./lib/google-drive");
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: GOOGLE_DRIVE_UPLOAD_LIMIT }));
 app.use(express.urlencoded({ extended: true }));
 
 // Log request
