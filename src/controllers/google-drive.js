@@ -6,26 +6,37 @@ const {
   deleteFile,
 } = require("../lib/google-drive");
 
+const handleGoogleDriveAction = (results, actionMessage, response, res) => {
+  const { status, data } = results;
+  console.log(actionMessage);
+  response.success = true;
+  response.count = data.files && data.files.length;
+  response.data = data;
+  res.status(status).send(response);
+};
+
+const handleError = (error, action, response, res) => {
+  const { status, errors } = error;
+  const { message } = (errors && errors[0]) || error;
+  console.error(`Error occurred ${action}: [${status}] - ${message}`);
+  response.errors = errors || [error];
+  res.status(status).send(response);
+};
+
 const getFiles = async (req, res, next) => {
   const { q } = req.query;
   const response = { success: false, query: req.query };
 
   try {
-    const { status, data } = await listFiles(q);
-    console.log(`Files retrieved using query: ${q}`);
-    response.success = true;
-    response.count = data.files.length;
-    response.data = data;
-    res.status(status);
-  } catch (error) {
-    console.error(
-      `Error occurred getting files: [${error.status}] - ${error.errors[0].message}`
+    handleGoogleDriveAction(
+      await listFiles(q),
+      `Files retrieved using query: ${q}`,
+      response,
+      res
     );
-    response.errors = error.errors;
-    res.status(error.status);
+  } catch (error) {
+    handleError(error, "getting files", response, res);
   }
-
-  res.send(response);
 };
 
 const getFileById = async (req, res, next) => {
@@ -33,20 +44,15 @@ const getFileById = async (req, res, next) => {
   const response = { success: false, id };
 
   try {
-    const { status, data } = await getFile(id);
-    console.log(`File retrieved: ${id}`);
-    response.success = true;
-    response.data = data;
-    res.status(status);
-  } catch (error) {
-    console.error(
-      `Error occurred getting file: [${error.status}] - ${error.errors[0].message}`
+    handleGoogleDriveAction(
+      await getFile(id),
+      `File retrieved: ${id}`,
+      response,
+      res
     );
-    response.errors = error.errors;
-    res.status(error.status);
+  } catch (error) {
+    handleError(error, "getting file", response, res);
   }
-
-  res.send(response);
 };
 
 const postFile = async (req, res, next) => {
@@ -54,20 +60,15 @@ const postFile = async (req, res, next) => {
   const response = { success: false, name, body };
 
   try {
-    const { status, data } = await uploadFile(body, name);
-    console.log(`File uploaded: ${name}`);
-    response.success = true;
-    response.data = data;
-    res.status(status);
-  } catch (error) {
-    console.error(
-      `Error occurred uploading file: [${error.status}] - ${error.errors[0].message}`
+    handleGoogleDriveAction(
+      await uploadFile(body, name),
+      `File uploaded: ${name}`,
+      response,
+      res
     );
-    response.errors = error.errors;
-    res.status(error.status);
+  } catch (error) {
+    handleError(error, "uploading file", response, res);
   }
-
-  res.send(response);
 };
 
 const putFileById = async (req, res, next) => {
@@ -76,20 +77,15 @@ const putFileById = async (req, res, next) => {
   const response = { success: false, id, body };
 
   try {
-    const { status, data } = await updateFile(id, body);
-    console.log(`File updated: ${id}`);
-    response.success = true;
-    response.data = data;
-    res.status(status);
-  } catch (error) {
-    console.error(
-      `Error occurred updating file: [${error.status}] - ${error.errors[0].message}`
+    handleGoogleDriveAction(
+      await updateFile(id, body),
+      `File updated: ${id}`,
+      response,
+      res
     );
-    response.errors = error.errors;
-    res.status(error.status);
+  } catch (error) {
+    handleError(error, "updating file", response, res);
   }
-
-  res.send(response);
 };
 
 const deleteFileById = async (req, res, next) => {
@@ -97,20 +93,15 @@ const deleteFileById = async (req, res, next) => {
   const response = { success: false, id };
 
   try {
-    const { status, data } = await deleteFile(id);
-    console.log(`File deleted: ${id}`);
-    response.success = true;
-    response.data = data;
-    res.status(status);
-  } catch (error) {
-    console.error(
-      `Error occurred deleting file: [${error.status}] - ${error.errors[0].message}`
+    handleGoogleDriveAction(
+      await deleteFile(id),
+      `File deleted: ${id}`,
+      response,
+      res
     );
-    response.errors = error.errors;
-    res.status(error.status);
+  } catch (error) {
+    handleError(error, "deleting file", response, res);
   }
-
-  res.send(response);
 };
 
 module.exports = {
