@@ -8,15 +8,15 @@ const {
   authAPIRequest,
   serverErrorHandler,
 } = require("@davidlwatsonjr/microservice-middleware");
-
+const { googleDriveErrorHandler } = require("./middleware/google-drive");
 const {
-  GOOGLE_DRIVE_UPLOAD_LIMIT,
-  listFiles,
-  getFile,
-  uploadFile,
-  updateFile,
-  deleteFile,
-} = require("./lib/google-drive");
+  getFiles,
+  getFileById,
+  postFile,
+  putFileById,
+  deleteFileById,
+} = require("./controllers/google-drive");
+const { GOOGLE_DRIVE_UPLOAD_LIMIT } = require("./lib/google-drive");
 
 const app = express();
 app.use(express.json({ limit: GOOGLE_DRIVE_UPLOAD_LIMIT }));
@@ -31,51 +31,13 @@ app.get("/ping", async (req, res) => {
 
 app.use(authAPIRequest);
 
-app.get("/files", async (req, res, next) => {
-  const { q } = req.query;
-  const { status, data } = await listFiles(q);
-  const { files } = data;
-  res.status(status).send({ count: files.length, files });
-});
+app.get("/files", getFiles);
+app.get("/files/:id", getFileById);
+app.post("/files", postFile);
+app.put("/files/:id", putFileById);
+app.delete("/files/:id", deleteFileById);
 
-app.get("/files/:id", async (req, res, next) => {
-  const { id } = req.params;
-  const response = await getFile(id);
-  const { status, data } = response;
-  res.status(status).send(data);
-});
-
-app.post("/files", async (req, res, next) => {
-  const { body, name } = req.body;
-  const { status, data } = await uploadFile(body, name);
-  res.status(status).send(data);
-});
-
-app.put("/files/:id", async (req, res, next) => {
-  const { id } = req.params;
-  const { body } = req.body;
-  const { status, data } = await updateFile(id, body);
-  res.status(status).send(data);
-});
-
-app.delete("/files/:id", async (req, res, next) => {
-  const { id } = req.params;
-  const { status, data } = await deleteFile(id);
-  res.status(status).send(data);
-});
-
-app.use((err, req, res, next) => {
-  try {
-    const { response } = err;
-    const { status, data } = response;
-    const { error } = data;
-    const { message } = error;
-    console.error(`${status} - ${message}`);
-    res.status(status).send(message);
-  } catch {
-    throw err;
-  }
-});
+app.use(googleDriveErrorHandler);
 
 app.use(serverErrorHandler);
 
