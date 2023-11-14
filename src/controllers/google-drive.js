@@ -24,9 +24,10 @@ const handleError = (error, action, response, res) => {
 };
 
 const getFiles = async (req, res, next) => {
-  const { q } = req.query;
-  const response = { success: false, query: req.query };
+  const { query } = req;
+  const response = { success: false, query };
 
+  const { q } = query;
   try {
     handleGoogleDriveAction(
       await listFiles(q),
@@ -40,9 +41,10 @@ const getFiles = async (req, res, next) => {
 };
 
 const getFileById = async (req, res, next) => {
-  const { id } = req.params;
-  const response = { success: false, id };
+  const { params } = req;
+  const response = { success: false, params };
 
+  const { id } = params;
   try {
     handleGoogleDriveAction(
       await getFile(id),
@@ -56,12 +58,13 @@ const getFileById = async (req, res, next) => {
 };
 
 const postFile = async (req, res, next) => {
-  const { body, name } = req.body;
-  const response = { success: false, name, body };
+  const { body } = req;
+  const response = { success: false, body };
 
+  const { body: fileBody, name } = body;
   try {
     handleGoogleDriveAction(
-      await uploadFile(body, name),
+      await uploadFile(fileBody, name),
       `File uploaded: ${name}`,
       response,
       res
@@ -72,13 +75,14 @@ const postFile = async (req, res, next) => {
 };
 
 const putFileById = async (req, res, next) => {
-  const { id } = req.params;
-  const { body } = req.body;
-  const response = { success: false, id, body };
+  const { params, body } = req;
+  const response = { success: false, params, body };
 
+  const { id } = params;
+  const { body: fileBody } = body;
   try {
     handleGoogleDriveAction(
-      await updateFile(id, body),
+      await updateFile(id, fileBody),
       `File updated: ${id}`,
       response,
       res
@@ -89,9 +93,10 @@ const putFileById = async (req, res, next) => {
 };
 
 const deleteFileById = async (req, res, next) => {
-  const { id } = req.params;
-  const response = { success: false, id };
+  const { params } = req;
+  const response = { success: false, params };
 
+  const { id } = params;
   try {
     handleGoogleDriveAction(
       await deleteFile(id),
