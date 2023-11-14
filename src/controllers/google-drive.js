@@ -6,7 +6,7 @@ const {
   deleteFile,
 } = require("../lib/google-drive");
 
-const handleGoogleDriveAction = (results, actionMessage, response, res) => {
+const tryGoogleDriveAction = (results, actionMessage, response, res) => {
   const { status, data } = results;
   console.log(actionMessage);
   response.success = true;
@@ -29,7 +29,7 @@ const getFiles = async (req, res, next) => {
 
   const { q } = query;
   try {
-    handleGoogleDriveAction(
+    tryGoogleDriveAction(
       await listFiles(q),
       `Files retrieved using query: ${q}`,
       response,
@@ -46,7 +46,7 @@ const getFileById = async (req, res, next) => {
 
   const { id } = params;
   try {
-    handleGoogleDriveAction(
+    tryGoogleDriveAction(
       await getFile(id),
       `File retrieved: ${id}`,
       response,
@@ -63,7 +63,7 @@ const postFile = async (req, res, next) => {
 
   const { body: fileBody, name } = body;
   try {
-    handleGoogleDriveAction(
+    tryGoogleDriveAction(
       await uploadFile(fileBody, name),
       `File uploaded: ${name}`,
       response,
@@ -81,7 +81,7 @@ const putFileById = async (req, res, next) => {
   const { id } = params;
   const { body: fileBody } = body;
   try {
-    handleGoogleDriveAction(
+    tryGoogleDriveAction(
       await updateFile(id, fileBody),
       `File updated: ${id}`,
       response,
@@ -98,7 +98,7 @@ const deleteFileById = async (req, res, next) => {
 
   const { id } = params;
   try {
-    handleGoogleDriveAction(
+    tryGoogleDriveAction(
       await deleteFile(id),
       `File deleted: ${id}`,
       response,
