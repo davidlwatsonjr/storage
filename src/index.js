@@ -15,6 +15,7 @@ const {
   postFile,
   putFileById,
   deleteFileById,
+  deleteAllFiles,
 } = require("./controllers/google-drive");
 const { GOOGLE_DRIVE_UPLOAD_LIMIT } = require("./lib/google-drive");
 
@@ -35,6 +36,7 @@ app.get("/files", getFiles);
 app.get("/files/:id", getFileById);
 app.post("/files", postFile);
 app.put("/files/:id", putFileById);
+app.delete("/files", deleteAllFiles);
 app.delete("/files/:id", deleteFileById);
 
 app.use(googleDriveErrorHandler);

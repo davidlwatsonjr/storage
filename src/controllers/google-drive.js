@@ -92,6 +92,49 @@ const putFileById = async (req, res, next) => {
   }
 };
 
+const deleteAllFiles = async (req, res, next) => {
+  const { query } = req;
+  const response = { success: false, query };
+
+  const { confirm } = query;
+  try {
+    if (confirm !== "true") {
+      const error = new Error(
+        "You must confirm deletion of all files by setting ?confirm=true"
+      );
+      error.status = 400;
+      throw error;
+    }
+
+    const { status, data } = await listFiles();
+    console.log(`File list retrieved in preparation for deletion.`);
+    const { files } = data;
+    const deletionResponses = await Promise.all(
+      files.map(async ({ id }) => {
+        const params = { id };
+        const response = { success: false, params };
+        const { status, data } = await deleteFile(id);
+        console.log(`File deleted: ${id}`);
+        response.success = true;
+        response.status = status;
+        response.data = data;
+        return response;
+      })
+    );
+    response.success = deletionResponses.every(
+      ({ success }) => success === true
+    );
+    const deletionsStatus = response.success
+      ? status
+      : deletionResponses.find(({ success }) => success === false).status;
+    response.data = data;
+    response.data.deletionResponses = deletionResponses;
+    res.status(deletionsStatus).send(response);
+  } catch (error) {
+    handleError(error, "deleting all files", response, res);
+  }
+};
+
 const deleteFileById = async (req, res, next) => {
   const { params } = req;
   const response = { success: false, params };
@@ -115,4 +158,5 @@ module.exports = {
   postFile,
   putFileById,
   deleteFileById,
+  deleteAllFiles,
 };
