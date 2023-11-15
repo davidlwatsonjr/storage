@@ -124,7 +124,7 @@ const deleteAllFiles = async (req, res, next) => {
       throw error;
     }
 
-    const { status, data } = await listFiles();
+    const { data } = await listFiles();
     console.log(`File list retrieved in preparation for deletion.`);
     const { files } = data;
     const deletionResponses = await Promise.all(
@@ -142,11 +142,11 @@ const deleteAllFiles = async (req, res, next) => {
     response.success = deletionResponses.every(
       ({ success }) => success === true
     );
-    response.status = response.success
-      ? status
-      : deletionResponses.find(({ success }) => success === false).status;
-    response.data = data;
-    response.data.deletionResponses = deletionResponses;
+    response.status = deletionResponses.find(
+      ({ success }) => success === response.success
+    ).status;
+    response.data = deletionResponses;
+    response.files = files;
   } catch (error) {
     response = handleError(error, inputs, "deleting all files");
   }
