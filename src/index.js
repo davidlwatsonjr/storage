@@ -17,6 +17,14 @@ const {
   deleteFileById,
   deleteAllFiles,
 } = require("./controllers/google-drive");
+const {
+  getFiles: gcsGetFiles,
+  getFileByName: gcsGetFileByName,
+  postFile: gcsPostFile,
+  putFileByName: gcsPutFileByName,
+  deleteFileByName: gcsDeleteFileByName,
+  deleteAllFiles: gcsDeleteAllFiles,
+} = require("./controllers/google-cloud-storage");
 const { GOOGLE_DRIVE_UPLOAD_LIMIT } = require("./lib/google-drive");
 
 const app = express();
@@ -40,6 +48,13 @@ app.delete("/files", deleteAllFiles);
 app.delete("/files/:id", deleteFileById);
 
 app.use(googleDriveErrorHandler);
+
+app.get("/gcs/files", gcsGetFiles);
+app.get("/gcs/files/:name", gcsGetFileByName);
+app.post("/gcs/files", gcsPostFile);
+app.put("/gcs/files/:name", gcsPutFileByName);
+app.delete("/gcs/files", gcsDeleteAllFiles);
+app.delete("/gcs/files/:name", gcsDeleteFileByName);
 
 app.use(serverErrorHandler);
 
