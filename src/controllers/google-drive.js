@@ -109,6 +109,25 @@ const putFileById = async (req, res, next) => {
   res.status(response.status).send(response);
 };
 
+const deleteFileById = async (req, res, next) => {
+  const { params } = req;
+  const inputs = { params };
+
+  const { id } = params;
+  let response;
+  try {
+    response = tryGoogleDriveAction(
+      await deleteFile(id),
+      inputs,
+      `File deleted: ${id}`
+    );
+  } catch (error) {
+    response = handleError(error, inputs, "deleting file");
+  }
+
+  res.status(response.status).send(response);
+};
+
 const deleteAllFiles = async (req, res, next) => {
   const { query } = req;
   const inputs = { query };
@@ -149,25 +168,6 @@ const deleteAllFiles = async (req, res, next) => {
     response.files = files;
   } catch (error) {
     response = handleError(error, inputs, "deleting all files");
-  }
-
-  res.status(response.status).send(response);
-};
-
-const deleteFileById = async (req, res, next) => {
-  const { params } = req;
-  const inputs = { params };
-
-  const { id } = params;
-  let response;
-  try {
-    response = tryGoogleDriveAction(
-      await deleteFile(id),
-      inputs,
-      `File deleted: ${id}`
-    );
-  } catch (error) {
-    response = handleError(error, inputs, "deleting file");
   }
 
   res.status(response.status).send(response);
