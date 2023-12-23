@@ -1,6 +1,6 @@
 const { google } = require("googleapis");
 
-const pkey = require("../../pk.json");
+const pkey = require("../../pk-google-drive.json");
 
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 const GOOGLE_DRIVE_UPLOAD_LIMIT = "5mb";
