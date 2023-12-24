@@ -1,7 +1,9 @@
 const { Storage } = require("@google-cloud/storage");
 
-const storage = new Storage({ keyFilename: "pk-google-cloud-storage.json" });
-const bucket = storage.bucket(process.env.GCS_BUCKET);
+const { GCS_BUCKET, GCS_KEY_FILENAME } = process.env;
+
+const storage = new Storage({ keyFilename: GCS_KEY_FILENAME });
+const bucket = storage.bucket(GCS_BUCKET);
 
 const listFiles = async () => {
   return (await bucket.getFiles())[0];
