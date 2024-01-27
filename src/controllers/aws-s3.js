@@ -1,21 +1,21 @@
 const {
-  listFiles: gcsListFiles,
-  getFile: gcsGetFile,
-  saveFile: gcsSaveFile,
-  deleteFile: gcsDeleteFile,
-  deleteFiles: gcsDeleteFiles,
-} = require("../lib/google-cloud-storage");
+  listFiles: s3ListFiles,
+  getFile: s3GetFile,
+  saveFile: s3SaveFile,
+  deleteFile: s3DeleteFile,
+  deleteFiles: s3DeleteFiles,
+} = require("../lib/aws-s3");
 
 const getFileList = async (req, res) => {
   const { query } = req;
   const inputs = { query };
 
   const { q } = query;
-  const data = await gcsListFiles(q);
+  const data = await s3ListFiles(q);
 
   const response = {
     success: true,
-    status: 200,
+    status: data.$metadata.httpStatusCode,
     ...inputs,
     data,
   };
@@ -29,13 +29,13 @@ const getFile = async (req, res) => {
 
   const { name } = params;
 
-  const data = await gcsGetFile(name);
+  const data = await s3GetFile(name);
 
   const response = {
     success: true,
-    status: 200,
+    status: data.$metadata.httpStatusCode,
     ...inputs,
-    data,
+    data: await data.Body.transformToString(),
   };
 
   res.status(response.status).send(response);
@@ -47,11 +47,11 @@ const postFile = async (req, res) => {
 
   const { body: content, name } = body;
 
-  const data = await gcsSaveFile(content, name);
+  const data = await s3SaveFile(name, content);
 
   const response = {
     success: true,
-    status: 200,
+    status: data.$metadata.httpStatusCode,
     ...inputs,
     data,
   };
@@ -66,11 +66,11 @@ const putFile = async (req, res) => {
   const { name } = params;
   const { body: content } = body;
 
-  const data = await gcsSaveFile(content, name);
+  const data = await s3SaveFile(name, content);
 
   const response = {
     success: true,
-    status: 200,
+    status: data.$metadata.httpStatusCode,
     ...inputs,
     data,
   };
@@ -84,11 +84,11 @@ const deleteFile = async (req, res) => {
 
   const { name } = params;
 
-  const data = await gcsDeleteFile(name);
+  const data = await s3DeleteFile(name);
 
   const response = {
     success: true,
-    status: 200,
+    status: data.$metadata.httpStatusCode,
     ...inputs,
     data,
   };
@@ -102,11 +102,11 @@ const deleteFiles = async (req, res) => {
 
   const { confirm } = query;
 
-  const data = confirm === "true" ? await gcsDeleteFiles("*") : null;
+  const data = confirm === "true" ? await s3DeleteFiles() : null;
 
   const response = {
     success: true,
-    status: 200,
+    status: data.$metadata.httpStatusCode,
     ...inputs,
     data,
   };

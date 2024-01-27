@@ -14,7 +14,7 @@ const initializeGoogleDriveClient = async () => {
     SCOPES
   );
   await googleAPIClient.authorize();
-  googleDriveClient = await google.drive({
+  googleDriveClient = google.drive({
     version: "v3",
     auth: googleAPIClient,
   });
@@ -37,7 +37,7 @@ const getFile = async (fileId) => {
   });
 };
 
-const uploadFile = async (body, name) => {
+const createFile = async (body, name) => {
   googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.create({
     media: { body },
@@ -46,7 +46,7 @@ const uploadFile = async (body, name) => {
   });
 };
 
-const updateFile = async (fileId, body) => {
+const saveFile = async (fileId, body) => {
   googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.update({
     media: { body },
@@ -63,7 +63,7 @@ module.exports = {
   GOOGLE_DRIVE_UPLOAD_LIMIT,
   listFiles,
   getFile,
-  uploadFile,
-  updateFile,
+  createFile,
+  saveFile,
   deleteFile,
 };

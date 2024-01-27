@@ -5,15 +5,15 @@ const { GCS_BUCKET, GCS_KEY_FILENAME } = process.env;
 const storage = new Storage({ keyFilename: GCS_KEY_FILENAME });
 const bucket = storage.bucket(GCS_BUCKET);
 
-const listFiles = async () => {
-  return (await bucket.getFiles())[0];
+const listFiles = async (matchGlob) => {
+  return (await bucket.getFiles({ matchGlob }))[0];
 };
 
 const getFile = async (name) => {
   return (await bucket.file(name).download()).toString();
 };
 
-const uploadFile = async (data, name) => {
+const saveFile = async (data, name) => {
   return await bucket.file(name).save(data);
 };
 
@@ -28,7 +28,7 @@ const deleteFiles = async (matchGlob) => {
 module.exports = {
   listFiles,
   getFile,
-  uploadFile,
+  saveFile,
   deleteFile,
   deleteFiles,
 };
