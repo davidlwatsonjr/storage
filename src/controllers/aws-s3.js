@@ -29,13 +29,13 @@ const getFile = async (req, res) => {
 
   const { name } = params;
 
-  const data = await s3GetFile(name);
+  const data = await (await s3GetFile(name)).Body.transformToString();
 
   const response = {
     success: true,
     status: data.$metadata.httpStatusCode,
     ...inputs,
-    data: await data.Body.transformToString(),
+    data,
   };
 
   res.status(response.status).send(response);
