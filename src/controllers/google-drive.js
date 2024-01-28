@@ -106,11 +106,11 @@ const deleteFiles = async (req, res, next) => {
   const { query } = req;
   const { confirm } = query;
   if (confirm !== "true") {
-    const error = new Error(
+    const err = new Error(
       "You must confirm deletion of all files by setting ?confirm=true",
     );
-    error.status = 400;
-    next(error);
+    err.status = 400;
+    next(err);
     return;
   }
 
