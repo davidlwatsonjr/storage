@@ -1,13 +1,17 @@
 const gcsErrorHandler = (err, req, res, next) => {
-  console.log("gcsErrorHandler");
-  try {
-    const { $metadata, Code, message, Key } = err;
-    const { httpStatusCode } = $metadata;
-    console.error(`[${httpStatusCode}] ${Code}: ${message} (${Key})`);
-    res.status(httpStatusCode).send(message);
-  } catch {
+  const { error, errors, code, message } = err;
+  if (!code) {
     throw err;
   }
+  const { inputs } = res.locals;
+  const response = {
+    success: false,
+    code,
+    errors: errors || [error],
+    inputs,
+  };
+  console.error(`GCS ERROR ${code} - ${message}`);
+  res.status(code).send(response);
 };
 
 module.exports = { gcsErrorHandler };
