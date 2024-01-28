@@ -6,158 +6,129 @@ const {
   deleteFile: gdDeleteFile,
 } = require("../lib/google-drive");
 
-const tryGoogleDriveAction = (results, inputs, actionMessage) => {
-  const { status, data } = results;
+const tryGoogleDriveAction = async (results, actionMessage, req, res) => {
+  const { params, query, body } = req;
+  res.locals.inputs = { params, query, body };
+  const { status, data } = await results;
   const response = {
     success: true,
     status,
-    ...inputs,
     count: data.files && data.files.length,
     data,
+    inputs: res.locals.inputs,
   };
   console.log(actionMessage);
   return response;
 };
 
-const handleError = (error, inputs, action) => {
-  const { status, errors } = error;
-  const { message } = (errors && errors[0]) || error;
-  const response = {
-    success: false,
-    status,
-    ...inputs,
-    errors: errors || [error],
-  };
-  console.error(`Error occurred ${action}: [${status}] - ${message}`);
-  return response;
-};
-
 const getFileList = async (req, res, next) => {
   const { query } = req;
-  const inputs = { query };
-
   const { q } = query;
-  let response;
   try {
-    response = tryGoogleDriveAction(
-      await gdListFiles(q),
-      inputs,
+    const response = await tryGoogleDriveAction(
+      gdListFiles(q),
       `Files retrieved using query: ${q}`,
+      req,
+      res,
     );
-  } catch (error) {
-    response = handleError(error, inputs, "getting files");
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
   }
-
-  res.status(response.status).send(response);
 };
 
 const getFile = async (req, res, next) => {
   const { params } = req;
-  const inputs = { params };
-
   const { id } = params;
-  let response;
   try {
-    response = tryGoogleDriveAction(
-      await gdGetFile(id),
-      inputs,
+    const response = await tryGoogleDriveAction(
+      gdGetFile(id),
       `File retrieved: ${id}`,
+      req,
+      res,
     );
-  } catch (error) {
-    response = handleError(error, inputs, "getting file");
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
   }
-
-  res.status(response.status).send(response);
 };
 
 const postFile = async (req, res, next) => {
   const { body } = req;
-  const inputs = { body };
-
   const { body: fileBody, name } = body;
-  let response;
   try {
-    response = tryGoogleDriveAction(
-      await gdCreateFile(fileBody, name),
-      inputs,
+    const response = await tryGoogleDriveAction(
+      gdCreateFile(fileBody, name),
       `File uploaded: ${name}`,
+      req,
+      res,
     );
-  } catch (error) {
-    response = handleError(error, inputs, "uploading file");
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
   }
-
-  res.status(response.status).send(response);
 };
 
 const putFile = async (req, res, next) => {
   const { params, body } = req;
-  const inputs = { params, body };
-
   const { id } = params;
   const { body: fileBody } = body;
-  let response;
   try {
-    response = tryGoogleDriveAction(
-      await gdSaveFile(id, fileBody),
-      inputs,
+    const response = await tryGoogleDriveAction(
+      gdSaveFile(id, fileBody),
       `File updated: ${id}`,
+      req,
+      res,
     );
-  } catch (error) {
-    response = handleError(error, inputs, "updating file");
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
   }
-
-  res.status(response.status).send(response);
 };
 
 const deleteFile = async (req, res, next) => {
   const { params } = req;
-  const inputs = { params };
-
   const { id } = params;
-  let response;
   try {
-    response = tryGoogleDriveAction(
-      await gdDeleteFile(id),
-      inputs,
+    const response = await tryGoogleDriveAction(
+      gdDeleteFile(id),
       `File deleted: ${id}`,
+      req,
+      res,
     );
-  } catch (error) {
-    response = handleError(error, inputs, "deleting file");
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
   }
-
-  res.status(response.status).send(response);
 };
 
 const deleteFiles = async (req, res, next) => {
   const { query } = req;
-  const inputs = { query };
-
   const { confirm } = query;
-  let response;
-  try {
-    if (confirm !== "true") {
-      const error = new Error(
-        "You must confirm deletion of all files by setting ?confirm=true",
-      );
-      error.status = 400;
-      throw error;
-    }
+  if (confirm !== "true") {
+    const error = new Error(
+      "You must confirm deletion of all files by setting ?confirm=true",
+    );
+    error.status = 400;
+    next(error);
+    return;
+  }
 
-    const { data } = await listFiles();
+  try {
+    const { data } = await gdListFiles();
     console.log(`File list retrieved in preparation for deletion.`);
     const { files } = data;
     const deletionResponses = await Promise.all(
       files.map(async ({ id }) => {
-        const params = { id };
-        const inputs = { params };
-        return tryGoogleDriveAction(
-          await gdDeleteFile(id),
-          inputs,
+        return await tryGoogleDriveAction(
+          gdDeleteFile(id),
           `File deleted: ${id}`,
+          req,
+          res,
         );
       }),
     );
-    response = {};
+
     response.success = deletionResponses.every(
       ({ success }) => success === true,
     );
@@ -166,11 +137,11 @@ const deleteFiles = async (req, res, next) => {
     ).status;
     response.data = deletionResponses;
     response.files = files;
-  } catch (error) {
-    response = handleError(error, inputs, "deleting all files");
-  }
 
-  res.status(response.status).send(response);
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports = {
