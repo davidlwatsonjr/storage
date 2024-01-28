@@ -9,11 +9,11 @@ const {
 const tryGCSAction = async (results, actionMessage, req, res) => {
   const { params, query, body } = req;
   res.locals.inputs = { params, query, body };
-  const { status, data } = await results;
+  const data = await results;
   const response = {
     success: true,
-    status,
-    count: data.files && data.files.length,
+    status: 200,
+    count: data?.length,
     data,
     inputs: res.locals.inputs,
   };
