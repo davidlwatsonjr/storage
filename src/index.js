@@ -6,7 +6,6 @@ const {
   requestLogger,
   authAPIRequest,
   serverErrorHandler,
-  inputsInRes,
 } = require("@davidlwatsonjr/microservice-middleware");
 
 const app = express();
@@ -20,7 +19,6 @@ app.get("/ping", async (req, res) => {
 });
 
 app.use(authAPIRequest);
-app.use(inputsInRes);
 
 /* Google Cloud Storage */
 const gcsControllers = require("./controllers/google-cloud-storage");
