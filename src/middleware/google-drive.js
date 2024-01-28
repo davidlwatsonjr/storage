@@ -10,7 +10,7 @@ const googleDriveErrorHandler = (err, req, res, next) => {
     errors: errors || [error],
     inputs,
   };
-  console.error(`${status} - ${message}`);
+  console.error(`Google Drive ERROR ${status} - ${message}`);
   res.status(status).send(response);
 };
 
