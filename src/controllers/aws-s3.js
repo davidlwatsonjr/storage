@@ -98,11 +98,19 @@ const deleteFile = async (req, res) => {
 
 const deleteFiles = async (req, res) => {
   const { query } = req;
+  const { confirm } = query;
+  if (confirm !== "true") {
+    const error = new Error(
+      "You must confirm deletion of all files by setting ?confirm=true",
+    );
+    error.status = 400;
+    next(error);
+    return;
+  }
+
   const inputs = { query };
 
-  const { confirm } = query;
-
-  const data = confirm === "true" ? await s3DeleteFiles() : null;
+  const data = await s3DeleteFiles();
 
   const response = {
     success: true,
