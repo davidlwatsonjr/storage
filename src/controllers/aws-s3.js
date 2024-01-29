@@ -51,7 +51,7 @@ const getFile = async (req, res, next) => {
   try {
     const response = await tryS3Action(
       s3GetFile(name),
-      `Files retrieved using query: ${name}`,
+      `File retrieved: ${name}`,
       req,
       res,
       async (data) => await data.Body.transformToString(),
