@@ -129,6 +129,7 @@ const deleteFiles = async (req, res, next) => {
       }),
     );
 
+    const response = {};
     response.success = deletionResponses.every(
       ({ success }) => success === true,
     );
