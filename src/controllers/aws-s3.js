@@ -85,7 +85,7 @@ const putFile = async (req, res, next) => {
   try {
     const response = await tryS3Action(
       s3SaveFile(name, content),
-      `File updated: ${id}`,
+      `File updated: ${name}`,
       req,
       res,
     );
