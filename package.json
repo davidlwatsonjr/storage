@@ -6,6 +6,7 @@
   "scripts": {
     "docker:build": "docker build -t storage .",
     "docker:start": "docker run -p 8080:8080 storage",
+    "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
