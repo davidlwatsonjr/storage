@@ -1,9 +1,10 @@
 const {
   S3Client,
+  ListObjectsV2Command,
   GetObjectCommand,
   PutObjectCommand,
   DeleteObjectCommand,
-  ListObjectsV2Command,
+  DeleteObjectsCommand,
 } = require("@aws-sdk/client-s3");
 
 const bucketName = process.env.S3_BUCKET_NAME;
