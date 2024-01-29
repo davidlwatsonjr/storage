@@ -13,7 +13,7 @@ const tryGoogleDriveAction = async (results, actionMessage, req, res) => {
   const response = {
     success: true,
     status,
-    count: data.files && data.files.length,
+    count: data?.files?.length,
     data,
     inputs: res.locals.inputs,
   };
