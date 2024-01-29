@@ -115,7 +115,7 @@ const deleteFiles = async (req, res, next) => {
   }
 
   try {
-    const response = await tryGoogleDriveAction(
+    const response = await tryGCSAction(
       gcsDeleteFiles("*"),
       "All files deleted",
       req,
