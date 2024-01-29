@@ -50,13 +50,11 @@ const deleteFile = async (key) => {
 
 const deleteFiles = async (prefix) => {
   const objects = await listFiles(prefix);
-  const keys = objects.Contents.map((object) => object.Key);
+  const Objects = objects.Contents.map(({ Key }) => ({ Key }));
   return await s3Client.send(
     new DeleteObjectsCommand({
       Bucket: bucketName,
-      Delete: {
-        Objects: keys,
-      },
+      Delete: { Objects },
     }),
   );
 };
