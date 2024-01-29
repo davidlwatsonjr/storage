@@ -6,97 +6,112 @@ const {
   deleteFiles: s3DeleteFiles,
 } = require("../lib/aws-s3");
 
-const getFileList = async (req, res) => {
+const tryS3Action = async (
+  results,
+  actionMessage,
+  req,
+  res,
+  dataTransformFn,
+) => {
+  const { params, query, body } = req;
+  res.locals.inputs = { params, query, body };
+  const data = await results;
+  const transformedData =
+    typeof dataTransformFn === "function" ? await dataTransformFn(data) : data;
+  const response = {
+    success: true,
+    status: data?.$metadata?.httpStatusCode,
+    count: data?.length,
+    data: transformedData,
+    inputs: res.locals.inputs,
+  };
+  console.log(actionMessage);
+  return response;
+};
+
+const getFileList = async (req, res, next) => {
   const { query } = req;
-  const inputs = { query };
-
   const { q } = query;
-  const data = await s3ListFiles(q);
-
-  const response = {
-    success: true,
-    status: data.$metadata.httpStatusCode,
-    ...inputs,
-    data,
-  };
-
-  res.status(response.status).send(response);
+  try {
+    const response = await tryS3Action(
+      s3ListFiles(q),
+      `Files retrieved using query: ${q}`,
+      req,
+      res,
+    );
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
+  }
 };
 
-const getFile = async (req, res) => {
+const getFile = async (req, res, next) => {
   const { params } = req;
-  const inputs = { params };
-
   const { name } = params;
-
-  const data = await (await s3GetFile(name)).Body.transformToString();
-
-  const response = {
-    success: true,
-    status: data.$metadata.httpStatusCode,
-    ...inputs,
-    data,
-  };
-
-  res.status(response.status).send(response);
+  try {
+    const response = await tryS3Action(
+      s3GetFile(name),
+      `Files retrieved using query: ${name}`,
+      req,
+      res,
+      async (data) => await data.Body.transformToString(),
+    );
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
+  }
 };
 
-const postFile = async (req, res) => {
+const postFile = async (req, res, next) => {
   const { body } = req;
-  const inputs = { body };
-
   const { body: content, name } = body;
-
-  const data = await s3SaveFile(name, content);
-
-  const response = {
-    success: true,
-    status: data.$metadata.httpStatusCode,
-    ...inputs,
-    data,
-  };
-
-  res.status(response.status).send(response);
+  try {
+    const response = await tryS3Action(
+      s3SaveFile(name, content),
+      `File uploaded: ${name}`,
+      req,
+      res,
+    );
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
+  }
 };
 
-const putFile = async (req, res) => {
+const putFile = async (req, res, next) => {
   const { params, body } = req;
-  const inputs = { params, body };
-
   const { name } = params;
   const { body: content } = body;
-
-  const data = await s3SaveFile(name, content);
-
-  const response = {
-    success: true,
-    status: data.$metadata.httpStatusCode,
-    ...inputs,
-    data,
-  };
-
-  res.status(response.status).send(response);
+  try {
+    const response = await tryS3Action(
+      s3SaveFile(name, content),
+      `File updated: ${id}`,
+      req,
+      res,
+    );
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
+  }
 };
 
-const deleteFile = async (req, res) => {
+const deleteFile = async (req, res, next) => {
   const { params } = req;
-  const inputs = { params };
-
   const { name } = params;
-
-  const data = await s3DeleteFile(name);
-
-  const response = {
-    success: true,
-    status: data.$metadata.httpStatusCode,
-    ...inputs,
-    data,
-  };
-
-  res.status(response.status).send(response);
+  try {
+    const response = await tryS3Action(
+      s3DeleteFile(name),
+      `File deleted: ${name}`,
+      req,
+      res,
+    );
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
+  }
 };
 
-const deleteFiles = async (req, res) => {
+const deleteFiles = async (req, res, next) => {
   const { query } = req;
   const { confirm } = query;
   if (confirm !== "true") {
@@ -108,18 +123,17 @@ const deleteFiles = async (req, res) => {
     return;
   }
 
-  const inputs = { query };
-
-  const data = await s3DeleteFiles();
-
-  const response = {
-    success: true,
-    status: data.$metadata.httpStatusCode,
-    ...inputs,
-    data,
-  };
-
-  res.status(response.status).send(response);
+  try {
+    const response = await tryS3Action(
+      s3DeleteFiles(),
+      "All files deleted",
+      req,
+      res,
+    );
+    res.status(response.status).send(response);
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports = {
