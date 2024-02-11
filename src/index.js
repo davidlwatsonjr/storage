@@ -23,12 +23,12 @@ app.use(authAPIRequest);
 /* Google Cloud Storage */
 const gcsControllers = require("./controllers/google-cloud-storage");
 const { gcsErrorHandler } = require("./middleware/google-cloud-storage");
-app.get("/gcs/files", gcsControllers.getFileList);
-app.get("/gcs/files/:name", gcsControllers.getFile);
-app.post("/gcs/files", gcsControllers.postFile);
-app.put("/gcs/files/:name", gcsControllers.putFile);
-app.delete("/gcs/files", gcsControllers.deleteFiles);
-app.delete("/gcs/files/:name", gcsControllers.deleteFile);
+app.get("/files", gcsControllers.getFileList);
+app.get("/files/:name", gcsControllers.getFile);
+app.post("/files", gcsControllers.postFile);
+app.put("/files/:name", gcsControllers.putFile);
+app.delete("/files", gcsControllers.deleteFiles);
+app.delete("/files/:name", gcsControllers.deleteFile);
 app.use(gcsErrorHandler);
 
 /* AWS S3 */
@@ -47,12 +47,12 @@ const googleDriveControllers = require("./controllers/google-drive");
 const { googleDriveErrorHandler } = require("./middleware/google-drive");
 const { GOOGLE_DRIVE_UPLOAD_LIMIT } = require("./lib/google-drive");
 app.use(express.json({ limit: GOOGLE_DRIVE_UPLOAD_LIMIT }));
-app.get("/files", googleDriveControllers.getFileList);
-app.get("/files/:id", googleDriveControllers.getFile);
-app.post("/files", googleDriveControllers.postFile);
-app.put("/files/:id", googleDriveControllers.putFile);
-app.delete("/files", googleDriveControllers.deleteFiles);
-app.delete("/files/:id", googleDriveControllers.deleteFile);
+app.get("/drive/files", googleDriveControllers.getFileList);
+app.get("/drive/files/:id", googleDriveControllers.getFile);
+app.post("/drive/files", googleDriveControllers.postFile);
+app.put("/drive/files/:id", googleDriveControllers.putFile);
+app.delete("/drive/files", googleDriveControllers.deleteFiles);
+app.delete("/drive/files/:id", googleDriveControllers.deleteFile);
 app.use(googleDriveErrorHandler);
 
 app.use(serverErrorHandler);
