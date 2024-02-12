@@ -5,6 +5,9 @@ const googleDriveErrorHandler = (err, req, res, next) => {
   }
   console.error(`Google Drive ERROR ${status} - ${message}`);
 
+  if (res.headersSent) {
+    return next(err);
+  }
   const { inputs } = res.locals;
   const response = {
     success: false,

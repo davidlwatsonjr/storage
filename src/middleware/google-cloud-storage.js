@@ -5,6 +5,9 @@ const gcsErrorHandler = (err, req, res, next) => {
   }
   console.error(`GCS ERROR ${code} - ${message}`);
 
+  if (res.headersSent) {
+    return next(err);
+  }
   const { inputs } = res.locals;
   const response = {
     success: false,
