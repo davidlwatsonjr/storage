@@ -1,7 +1,7 @@
 const gcsErrorHandler = (err, req, res, next) => {
   const { error, errors, code, message } = err;
   if (!code) {
-    throw err;
+    next(err);
   }
   const { inputs } = res.locals;
   const response = {

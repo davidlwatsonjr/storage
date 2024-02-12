@@ -1,7 +1,7 @@
 const awsS3ErrorHandler = (err, req, res, next) => {
   const { $metadata, Code, message, Key } = err;
   if (!$metadata?.httpStatusCode) {
-    throw err;
+    next(err);
   }
   const { httpStatusCode } = $metadata;
   const { inputs } = res.locals;
@@ -9,6 +9,7 @@ const awsS3ErrorHandler = (err, req, res, next) => {
     success: false,
     httpStatusCode,
     errors: [err],
+    message,
     inputs,
   };
 
