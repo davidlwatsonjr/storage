@@ -8,6 +8,7 @@ const gcsErrorHandler = (err, req, res, next) => {
     success: false,
     code,
     errors: errors || [error],
+    message,
     inputs,
   };
   console.error(`GCS ERROR ${code} - ${message}`);
