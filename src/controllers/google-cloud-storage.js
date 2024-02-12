@@ -76,7 +76,7 @@ const putFile = async (req, res, next) => {
   try {
     const response = await tryGCSAction(
       gcsSaveFile(content, name),
-      `File updated: ${id}`,
+      `File updated: ${name}`,
       req,
       res,
     );
