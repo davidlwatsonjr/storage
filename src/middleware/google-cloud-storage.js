@@ -1,7 +1,7 @@
 const gcsErrorHandler = (err, req, res, next) => {
   const { error, errors, code, message } = err;
   if (!code) {
-    next(err);
+    return next(err);
   }
   console.error(`GCS ERROR ${code} - ${message}`);
 

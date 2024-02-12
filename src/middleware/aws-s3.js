@@ -1,7 +1,7 @@
 const awsS3ErrorHandler = (err, req, res, next) => {
   const { $metadata, Code, message, Key } = err;
   if (!$metadata?.httpStatusCode) {
-    next(err);
+    return next(err);
   }
   const { httpStatusCode } = $metadata;
   console.error(`AWS S3 ERROR ${httpStatusCode} ${Code}: ${message} (${Key})`);

@@ -1,7 +1,7 @@
 const googleDriveErrorHandler = (err, req, res, next) => {
   const { error, errors, message, status } = err;
   if (!status) {
-    next(err);
+    return next(err);
   }
   console.error(`Google Drive ERROR ${status} - ${message}`);
 
