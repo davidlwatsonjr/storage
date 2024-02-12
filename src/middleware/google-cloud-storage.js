@@ -3,6 +3,8 @@ const gcsErrorHandler = (err, req, res, next) => {
   if (!code) {
     next(err);
   }
+  console.error(`GCS ERROR ${code} - ${message}`);
+
   const { inputs } = res.locals;
   const response = {
     success: false,
@@ -11,7 +13,6 @@ const gcsErrorHandler = (err, req, res, next) => {
     message,
     inputs,
   };
-  console.error(`GCS ERROR ${code} - ${message}`);
   res.status(code).send(response);
 };
 

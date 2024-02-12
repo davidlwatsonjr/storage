@@ -3,6 +3,8 @@ const googleDriveErrorHandler = (err, req, res, next) => {
   if (!status) {
     next(err);
   }
+  console.error(`Google Drive ERROR ${status} - ${message}`);
+
   const { inputs } = res.locals;
   const response = {
     success: false,
@@ -11,7 +13,6 @@ const googleDriveErrorHandler = (err, req, res, next) => {
     message,
     inputs,
   };
-  console.error(`Google Drive ERROR ${status} - ${message}`);
   res.status(status).send(response);
 };
 

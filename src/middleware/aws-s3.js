@@ -4,6 +4,8 @@ const awsS3ErrorHandler = (err, req, res, next) => {
     next(err);
   }
   const { httpStatusCode } = $metadata;
+  console.error(`AWS S3 ERROR ${httpStatusCode} ${Code}: ${message} (${Key})`);
+
   const { inputs } = res.locals;
   const response = {
     success: false,
@@ -12,8 +14,6 @@ const awsS3ErrorHandler = (err, req, res, next) => {
     message,
     inputs,
   };
-
-  console.error(`AWS S3 ERROR ${httpStatusCode} ${Code}: ${message} (${Key})`);
   res.status(httpStatusCode).send(response);
 };
 
