@@ -2,7 +2,7 @@ const { Storage } = require("@google-cloud/storage");
 
 const { GCS_BUCKET } = process.env;
 
-const storage = new Storage({ keyFilename: GCS_KEY_FILENAME });
+const storage = new Storage();
 const bucket = storage.bucket(GCS_BUCKET);
 
 const listFiles = async (matchGlob) => {
