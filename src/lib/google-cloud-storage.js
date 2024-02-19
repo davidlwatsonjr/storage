@@ -1,6 +1,6 @@
 const { Storage } = require("@google-cloud/storage");
 
-const { GCS_BUCKET, GCS_KEY_FILENAME } = process.env;
+const { GCS_BUCKET } = process.env;
 
 const storage = new Storage({ keyFilename: GCS_KEY_FILENAME });
 const bucket = storage.bucket(GCS_BUCKET);
