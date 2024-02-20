@@ -1,2 +1,4 @@
-.env
-!pk*.json
+.gcloudignore
+.git
+.gitignore
+#!include:.gitignore
