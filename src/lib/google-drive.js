@@ -1,23 +1,12 @@
 const { google } = require("googleapis");
 
-const pkey = require(process.env.GOOGLE_DRIVE_KEY_FILENAME);
-
-const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 const GOOGLE_DRIVE_UPLOAD_LIMIT = "5mb";
 
 let googleDriveClient;
 const initializeGoogleDriveClient = async () => {
-  const googleAPIClient = new google.auth.JWT(
-    pkey.client_email,
-    null,
-    pkey.private_key,
-    SCOPES
-  );
-  await googleAPIClient.authorize();
-  googleDriveClient = google.drive({
-    version: "v3",
-    auth: googleAPIClient,
-  });
+  const scopes = ["https://www.googleapis.com/auth/drive.file"];
+  const auth = new google.auth.GoogleAuth({ scopes });
+  googleDriveClient = google.drive({ version: "v3", auth });
   return googleDriveClient;
 };
 
