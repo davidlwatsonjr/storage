@@ -29,7 +29,7 @@ const tryS3Action = async (
   return response;
 };
 
-const getFileList = async (req, res, next) => {
+const getFilesList = async (req, res, next) => {
   const { query } = req;
   const { q } = query;
   try {
@@ -137,7 +137,7 @@ const deleteFiles = async (req, res, next) => {
 };
 
 module.exports = {
-  getFileList,
+  getFilesList,
   getFile,
   postFile,
   putFile,
