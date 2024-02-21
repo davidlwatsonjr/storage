@@ -8,6 +8,9 @@ const {
 
 const tryGCSAction = async (results, actionMessage, req, res) => {
   const { params, query, body } = req;
+  // This is done before awaiting the results to ensure that the inputs are saved
+  // before the results are awaited. This is important because if there is an error
+  // in the results, the inputs can still be used in the output in the error handler.
   res.locals.inputs = { params, query, body };
   const data = await results;
   const response = {
