@@ -34,6 +34,7 @@ const getFileList = async (req, res, next) => {
       req,
       res,
     );
+    response.data = response.data?.map(({ metadata }) => metadata);
     res.status(response.status).send(response);
   } catch (err) {
     next(err);
