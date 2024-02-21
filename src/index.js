@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const fileUpload = require("express-fileupload");
 const {
   gcpLogTransformer,
   requestLogger,
@@ -11,6 +12,7 @@ const {
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
 app.use(gcpLogTransformer);
 app.use(requestLogger);
 
@@ -23,7 +25,7 @@ app.use(authAPIRequest);
 /* Google Cloud Storage */
 const gcsControllers = require("./controllers/google-cloud-storage");
 const { gcsErrorHandler } = require("./middleware/google-cloud-storage");
-app.get("/files", gcsControllers.getFileList);
+app.get("/files", gcsControllers.getFilesList);
 app.get("/files/:name", gcsControllers.getFile);
 app.post("/files", gcsControllers.postFile);
 app.put("/files/:name", gcsControllers.putFile);
@@ -34,7 +36,7 @@ app.use(gcsErrorHandler);
 /* AWS S3 */
 const s3Controllers = require("./controllers/aws-s3");
 const { awsS3ErrorHandler } = require("./middleware/aws-s3");
-app.get("/s3/files", s3Controllers.getFileList);
+app.get("/s3/files", s3Controllers.getFilesList);
 app.get("/s3/files/:name", s3Controllers.getFile);
 app.post("/s3/files", s3Controllers.postFile);
 app.put("/s3/files/:name", s3Controllers.putFile);
@@ -47,7 +49,7 @@ const googleDriveControllers = require("./controllers/google-drive");
 const { googleDriveErrorHandler } = require("./middleware/google-drive");
 const { GOOGLE_DRIVE_UPLOAD_LIMIT } = require("./lib/google-drive");
 app.use(express.json({ limit: GOOGLE_DRIVE_UPLOAD_LIMIT }));
-app.get("/drive/files", googleDriveControllers.getFileList);
+app.get("/drive/files", googleDriveControllers.getFilesList);
 app.get("/drive/files/:id", googleDriveControllers.getFile);
 app.post("/drive/files", googleDriveControllers.postFile);
 app.put("/drive/files/:id", googleDriveControllers.putFile);

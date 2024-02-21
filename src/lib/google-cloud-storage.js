@@ -9,12 +9,16 @@ const listFiles = async (matchGlob) => {
   return (await bucket.getFiles({ matchGlob }))[0];
 };
 
-const getFile = async (name) => {
-  return (await bucket.file(name).download()).toString();
+const getFileMetadata = async (name) => {
+  return await bucket.file(name).getMetadata();
 };
 
-const saveFile = async (data, name) => {
-  return await bucket.file(name).save(data);
+const getFileStream = (name) => {
+  return bucket.file(name).createReadStream();
+};
+
+const saveFile = async (data, name, saveOptions) => {
+  return await bucket.file(name).save(data, saveOptions);
 };
 
 const deleteFile = async (name) => {
@@ -27,7 +31,8 @@ const deleteFiles = async (matchGlob) => {
 
 module.exports = {
   listFiles,
-  getFile,
+  getFileMetadata,
+  getFileStream,
   saveFile,
   deleteFile,
   deleteFiles,

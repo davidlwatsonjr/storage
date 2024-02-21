@@ -1,6 +1,6 @@
 const {
   listFiles: gcsListFiles,
-  getFile: gcsGetFile,
+  getFileStream: gcsGetFileStream,
   saveFile: gcsSaveFile,
   deleteFile: gcsDeleteFile,
   deleteFiles: gcsDeleteFiles,
@@ -24,7 +24,7 @@ const tryGCSAction = async (results, actionMessage, req, res) => {
   return response;
 };
 
-const getFileList = async (req, res, next) => {
+const getFilesList = async (req, res, next) => {
   const { query } = req;
   const { q } = query;
   try {
@@ -46,40 +46,47 @@ const getFile = async (req, res, next) => {
   const { name } = params;
   try {
     const response = await tryGCSAction(
-      gcsGetFile(name),
+      gcsGetFileStream(name),
       `File retrieved: ${name}`,
       req,
       res,
     );
-    res.status(response.status).send(response);
+    response.data.pipe(res);
   } catch (err) {
     next(err);
   }
 };
 
 const postFile = async (req, res, next) => {
-  const { body } = req;
-  const { body: content, name } = body;
+  const { body, files } = req;
+  const file = files?.file || files?.body;
+
+  const name = body.name || file?.name;
+  const data = file?.data || body.file || body.data || body.body;
+  const saveOptions = { contentType: file?.mimetype };
   try {
     const response = await tryGCSAction(
-      gcsSaveFile(content, name),
+      gcsSaveFile(data, name, saveOptions),
       `File uploaded: ${name}`,
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(201).send(response);
   } catch (err) {
     next(err);
   }
 };
 
 const putFile = async (req, res, next) => {
-  const { params, body } = req;
+  const { params, body, files } = req;
   const { name } = params;
-  const { body: content } = body;
+  const file = files?.file || files?.body;
+
+  const data = file?.data || body.file || body.data || body.body;
+  const saveOptions = { contentType: file?.mimetype };
   try {
     const response = await tryGCSAction(
-      gcsSaveFile(content, name),
+      gcsSaveFile(data, name, saveOptions),
       `File updated: ${name}`,
       req,
       res,
@@ -94,13 +101,8 @@ const deleteFile = async (req, res, next) => {
   const { params } = req;
   const { name } = params;
   try {
-    const response = await tryGCSAction(
-      gcsDeleteFile(name),
-      `File deleted: ${name}`,
-      req,
-      res,
-    );
-    res.status(response.status).send(response);
+    await tryGCSAction(gcsDeleteFile(name), `File deleted: ${name}`, req, res);
+    res.status(204);
   } catch (err) {
     next(err);
   }
@@ -111,7 +113,7 @@ const deleteFiles = async (req, res, next) => {
   const { confirm } = query;
   if (confirm !== "true") {
     const error = new Error(
-      "You must confirm deletion of all files by setting ?confirm=true",
+      "You must confirm deletion of multiple files by setting ?confirm=true",
     );
     error.status = 400;
     next(error);
@@ -132,7 +134,7 @@ const deleteFiles = async (req, res, next) => {
 };
 
 module.exports = {
-  getFileList,
+  getFilesList,
   getFile,
   postFile,
   putFile,
