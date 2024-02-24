@@ -71,7 +71,7 @@ const postFile = async (req, res, next) => {
       res,
     );
     response.data = undefined;
-    res.status(response.status).send(response);
+    res.status(201).send(response);
   } catch (err) {
     next(err);
   }
@@ -89,7 +89,7 @@ const putFile = async (req, res, next) => {
       res,
     );
     response.data = undefined;
-    res.status(response.status).send(response);
+    res.status(200).send(response);
   } catch (err) {
     next(err);
   }
@@ -105,7 +105,7 @@ const deleteFile = async (req, res, next) => {
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(204).send(response);
   } catch (err) {
     next(err);
   }
@@ -130,7 +130,7 @@ const deleteFiles = async (req, res, next) => {
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(204).send(response);
   } catch (err) {
     next(err);
   }
