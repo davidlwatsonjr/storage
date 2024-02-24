@@ -64,10 +64,9 @@ const postFile = async (req, res, next) => {
 
   const name = body.name || file?.name;
   const data = file?.data || body.file || body.data || body.body;
-  const saveOptions = { contentType: file?.mimetype };
   try {
     const response = await tryGCSAction(
-      gcsSaveFile(name, data, saveOptions),
+      gcsSaveFile(name, data),
       `File uploaded: ${name}`,
       req,
       res,
@@ -81,13 +80,12 @@ const postFile = async (req, res, next) => {
 const putFile = async (req, res, next) => {
   const { params, body, files } = req;
   const { name } = params;
-  const file = files?.file || files?.body;
 
+  const file = files?.file || files?.body;
   const data = file?.data || body.file || body.data || body.body;
-  const saveOptions = { contentType: file?.mimetype };
   try {
     const response = await tryGCSAction(
-      gcsSaveFile(name, data, saveOptions),
+      gcsSaveFile(name, data),
       `File updated: ${name}`,
       req,
       res,

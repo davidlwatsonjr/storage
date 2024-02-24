@@ -62,7 +62,6 @@ const postFile = async (req, res, next) => {
 
   const name = body.name || file?.name;
   const data = file?.data || body.file || body.data || body.body;
-  const saveOptions = { contentType: file?.mimetype };
   try {
     const response = await tryS3Action(
       s3SaveFile(name, data),
@@ -78,12 +77,14 @@ const postFile = async (req, res, next) => {
 };
 
 const putFile = async (req, res, next) => {
-  const { params, body } = req;
+  const { params, body, files } = req;
   const { name } = params;
-  const { body: content } = body;
+
+  const file = files?.file || files?.body;
+  const data = file?.data || body.file || body.data || body.body;
   try {
     const response = await tryS3Action(
-      s3SaveFile(name, content),
+      s3SaveFile(name, data),
       `File updated: ${name}`,
       req,
       res,
