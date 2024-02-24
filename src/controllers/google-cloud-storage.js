@@ -51,7 +51,7 @@ const getFile = async (req, res, next) => {
       req,
       res,
     );
-    response.data.pipe(res);
+    response.data.on("error", next).pipe(res);
   } catch (err) {
     next(err);
   }
@@ -102,7 +102,7 @@ const deleteFile = async (req, res, next) => {
   const { name } = params;
   try {
     await tryGCSAction(gcsDeleteFile(name), `File deleted: ${name}`, req, res);
-    res.status(204);
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
