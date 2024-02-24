@@ -8,13 +8,11 @@ const googleDriveErrorHandler = (err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
   }
-  const { inputs } = res.locals;
   const response = {
     success: false,
     status,
-    errors: errors || [error],
-    message,
-    inputs,
+    errors: (errors?.length && errors) || [error || { message }],
+    inputs: res.locals.inputs,
   };
   res.status(status).send(response);
 };

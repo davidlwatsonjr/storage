@@ -3,21 +3,19 @@ const awsS3ErrorHandler = (err, req, res, next) => {
   if (!$metadata?.httpStatusCode) {
     return next(err);
   }
-  const { httpStatusCode } = $metadata;
-  console.error(`AWS S3 ERROR ${httpStatusCode} ${Code}: ${message} (${Key})`);
+  const { httpStatusCode: status } = $metadata;
+  console.error(`AWS S3 ERROR ${status} ${Code}: ${message} (${Key})`);
 
   if (res.headersSent) {
     return next(err);
   }
-  const { inputs } = res.locals;
   const response = {
     success: false,
-    httpStatusCode,
-    errors: [err],
-    message,
-    inputs,
+    status,
+    errors: [err || { message }],
+    inputs: res.locals.inputs,
   };
-  res.status(httpStatusCode).send(response);
+  res.status(status).send(response);
 };
 
 module.exports = { awsS3ErrorHandler };
