@@ -7,55 +7,34 @@ const {
   DeleteObjectsCommand,
 } = require("@aws-sdk/client-s3");
 
-const bucketName = process.env.S3_BUCKET_NAME;
+const Bucket = process.env.S3_BUCKET_NAME;
 
 const s3Client = new S3Client();
 
-const listFiles = async (prefix) => {
-  return await s3Client.send(
-    new ListObjectsV2Command({
-      Bucket: bucketName,
-      Prefix: prefix,
-    }),
-  );
+const listFiles = async (Prefix) => {
+  const command = new ListObjectsV2Command({ Bucket, Prefix });
+  return await s3Client.send(command);
 };
 
-const getFile = async (key) => {
-  return await s3Client.send(
-    new GetObjectCommand({
-      Bucket: bucketName,
-      Key: key,
-    }),
-  );
+const getFile = async (Key) => {
+  const command = new GetObjectCommand({ Bucket, Key });
+  return await s3Client.send(command);
 };
 
-const saveFile = async (key, content) => {
-  return await s3Client.send(
-    new PutObjectCommand({
-      Bucket: bucketName,
-      Key: key,
-      Body: content,
-    }),
-  );
+const saveFile = async (Key, Body) => {
+  const command = new PutObjectCommand({ Bucket, Key, Body });
+  return await s3Client.send(command);
 };
 
-const deleteFile = async (key) => {
-  return await s3Client.send(
-    new DeleteObjectCommand({
-      Bucket: bucketName,
-      Key: key,
-    }),
-  );
+const deleteFile = async (Key) => {
+  const command = new DeleteObjectCommand({ Bucket, Key });
+  return await s3Client.send(command);
 };
 
-const deleteFiles = async (prefix) => {
-  const objects = await listFiles(prefix);
-  return await s3Client.send(
-    new DeleteObjectsCommand({
-      Bucket: bucketName,
-      Delete: { Objects: objects.Contents },
-    }),
-  );
+const deleteFiles = async (Prefix) => {
+  const { Contents: Objects } = await listFiles(Prefix);
+  const command = new DeleteObjectsCommand({ Bucket, Delete: { Objects } });
+  return await s3Client.send(command);
 };
 
 module.exports = {
