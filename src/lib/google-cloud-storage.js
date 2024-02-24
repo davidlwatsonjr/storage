@@ -17,7 +17,7 @@ const getFileStream = (name) => {
   return bucket.file(name).createReadStream();
 };
 
-const saveFile = async (data, name, saveOptions) => {
+const saveFile = async (name, data, saveOptions) => {
   return await bucket.file(name).save(data, saveOptions);
 };
 
