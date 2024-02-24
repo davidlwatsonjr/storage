@@ -12,7 +12,7 @@ const awsS3ErrorHandler = (err, req, res, next) => {
   const response = {
     success: false,
     status,
-    errors: [err || { message }],
+    errors: [{ message }],
     inputs: res.locals.inputs,
   };
   res.status(status).send(response);
