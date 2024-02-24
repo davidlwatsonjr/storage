@@ -35,7 +35,7 @@ const getFilesList = async (req, res, next) => {
       res,
     );
     response.data = response.data?.map(({ metadata }) => metadata);
-    res.status(response.status).send(response);
+    res.status(200).send(response);
   } catch (err) {
     next(err);
   }
@@ -52,6 +52,7 @@ const getFile = async (req, res, next) => {
       res,
     );
     response.data.on("error", next).pipe(res);
+    res.status(200);
   } catch (err) {
     next(err);
   }
@@ -91,7 +92,7 @@ const putFile = async (req, res, next) => {
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(200).send(response);
   } catch (err) {
     next(err);
   }
@@ -127,7 +128,7 @@ const deleteFiles = async (req, res, next) => {
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(204).send(response);
   } catch (err) {
     next(err);
   }
