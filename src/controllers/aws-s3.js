@@ -6,23 +6,15 @@ const {
   deleteFiles: s3DeleteFiles,
 } = require("../lib/aws-s3");
 
-const tryS3Action = async (
-  results,
-  actionMessage,
-  req,
-  res,
-  dataTransformFn,
-) => {
+const tryS3Action = async (results, actionMessage, req, res) => {
   const { params, query, body } = req;
   res.locals.inputs = { params, query, body };
   const data = await results;
-  const transformedData =
-    typeof dataTransformFn === "function" ? await dataTransformFn(data) : data;
   const response = {
     success: true,
     status: data?.$metadata?.httpStatusCode,
     count: data?.length,
-    data: transformedData,
+    data,
     inputs: res.locals.inputs,
   };
   console.log(actionMessage);
@@ -54,9 +46,8 @@ const getFile = async (req, res, next) => {
       `File retrieved: ${name}`,
       req,
       res,
-      async (data) => await data.Body.transformToString(),
     );
-    res.status(response.status).send(response);
+    response.data.Body.on("error", next).pipe(res);
   } catch (err) {
     next(err);
   }
