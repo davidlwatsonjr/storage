@@ -31,7 +31,9 @@ const getFilesList = async (req, res, next) => {
       req,
       res,
     );
-    res.status(response.status).send(response);
+    response.data = response.data?.Contents || [];
+    response.count = response.data.length;
+    res.status(200).send(response);
   } catch (err) {
     next(err);
   }
@@ -47,6 +49,7 @@ const getFile = async (req, res, next) => {
       req,
       res,
     );
+    res.status(200);
     response.data.Body.on("error", next).pipe(res);
   } catch (err) {
     next(err);
@@ -54,15 +57,20 @@ const getFile = async (req, res, next) => {
 };
 
 const postFile = async (req, res, next) => {
-  const { body } = req;
-  const { body: content, name } = body;
+  const { body, files } = req;
+  const file = files?.file || files?.body;
+
+  const name = body.name || file?.name;
+  const data = file?.data || body.file || body.data || body.body;
+  const saveOptions = { contentType: file?.mimetype };
   try {
     const response = await tryS3Action(
-      s3SaveFile(name, content),
+      s3SaveFile(name, data),
       `File uploaded: ${name}`,
       req,
       res,
     );
+    response.data = undefined;
     res.status(response.status).send(response);
   } catch (err) {
     next(err);
@@ -80,6 +88,7 @@ const putFile = async (req, res, next) => {
       req,
       res,
     );
+    response.data = undefined;
     res.status(response.status).send(response);
   } catch (err) {
     next(err);
