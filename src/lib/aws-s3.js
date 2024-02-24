@@ -21,8 +21,8 @@ const getFile = async (Key) => {
   return await s3Client.send(command);
 };
 
-const saveFile = async (Key, Body) => {
-  const command = new PutObjectCommand({ Bucket, Key, Body });
+const saveFile = async (Key, Body, Options) => {
+  const command = new PutObjectCommand({ ...Options, Bucket, Key, Body });
   return await s3Client.send(command);
 };
 
