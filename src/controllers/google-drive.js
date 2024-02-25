@@ -31,7 +31,9 @@ const getFilesList = async (req, res, next) => {
       req,
       res,
     );
-    res.status(response.status).send(response);
+    response.data = response.data?.files || [];
+    response.count = response.data.length;
+    res.status(200).send(response);
   } catch (err) {
     next(err);
   }
@@ -47,40 +49,45 @@ const getFile = async (req, res, next) => {
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(200).send(response.data);
   } catch (err) {
     next(err);
   }
 };
 
 const postFile = async (req, res, next) => {
-  const { body } = req;
-  const { body: fileBody, name } = body;
+  const { body, files } = req;
+  const file = files?.file || files?.body;
+
+  const name = body.name || file?.name;
+  const data = file?.data || body.file || body.data || body.body;
   try {
     const response = await tryGoogleDriveAction(
-      gdCreateFile(fileBody, name),
+      gdCreateFile(data, name),
       `File uploaded: ${name}`,
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(201).send(response);
   } catch (err) {
     next(err);
   }
 };
 
 const putFile = async (req, res, next) => {
-  const { params, body } = req;
+  const { params, body, files } = req;
   const { id } = params;
-  const { body: fileBody } = body;
+
+  const file = files?.file || files?.body;
+  const data = file?.data || body.file || body.data || body.body;
   try {
     const response = await tryGoogleDriveAction(
-      gdSaveFile(id, fileBody),
+      gdSaveFile(id, data),
       `File updated: ${id}`,
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(200).send(response);
   } catch (err) {
     next(err);
   }
@@ -96,7 +103,7 @@ const deleteFile = async (req, res, next) => {
       req,
       res,
     );
-    res.status(response.status).send(response);
+    res.status(204).send(response);
   } catch (err) {
     next(err);
   }
@@ -118,6 +125,12 @@ const deleteFiles = async (req, res, next) => {
     const { data } = await gdListFiles();
     console.log(`File list retrieved in preparation for deletion.`);
     const { files } = data;
+    if (!files || files.length === 0) {
+      const err = new Error("No files to delete.");
+      err.status = 404;
+      next(err);
+      return;
+    }
     const deletionResponses = await Promise.all(
       files.map(async ({ id }) => {
         return await tryGoogleDriveAction(
@@ -139,7 +152,7 @@ const deleteFiles = async (req, res, next) => {
     response.data = deletionResponses;
     response.files = files;
 
-    res.status(response.status).send(response);
+    res.status(204).send(response);
   } catch (err) {
     next(err);
   }
