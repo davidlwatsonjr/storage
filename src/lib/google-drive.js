@@ -1,3 +1,4 @@
+const { Readable } = require("stream");
 const { google } = require("googleapis");
 
 const GOOGLE_DRIVE_UPLOAD_LIMIT = "5mb";
@@ -29,16 +30,15 @@ const getFile = async (fileId) => {
 const createFile = async (body, name) => {
   googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.create({
-    media: { body },
-    fields: "id",
-    requestBody: { name },
+    media: { body: Readable.from(body) },
+    requestBody: { name, fields: "id" },
   });
 };
 
 const saveFile = async (fileId, body) => {
   googleDriveClient || (await initializeGoogleDriveClient());
   return await googleDriveClient.files.update({
-    media: { body },
+    media: { body: Readable.from(body) },
     fileId,
   });
 };
