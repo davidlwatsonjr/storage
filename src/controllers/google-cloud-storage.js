@@ -43,7 +43,7 @@ const getFilesList = async (req, res, next) => {
 
 const getFile = async (req, res, next) => {
   const { params } = req;
-  const { name } = params;
+  const name = params[0];
   try {
     const response = await tryGCSAction(
       gcsGetFileStream(name),
@@ -79,7 +79,7 @@ const postFile = async (req, res, next) => {
 
 const putFile = async (req, res, next) => {
   const { params, body, files } = req;
-  const { name } = params;
+  const name = params[0];
 
   const file = files?.file || files?.body;
   const data = file?.data || body.file || body.data || body.body;
@@ -98,7 +98,7 @@ const putFile = async (req, res, next) => {
 
 const deleteFile = async (req, res, next) => {
   const { params } = req;
-  const { name } = params;
+  const name = params[0];
   try {
     await tryGCSAction(gcsDeleteFile(name), `File deleted: ${name}`, req, res);
     res.status(204).send();

@@ -26,22 +26,22 @@ app.use(authAPIRequest);
 const gcsControllers = require("./controllers/google-cloud-storage");
 const { gcsErrorHandler } = require("./middleware/google-cloud-storage");
 app.get("/files", gcsControllers.getFilesList);
-app.get("/files/:name", gcsControllers.getFile);
+app.get("/files/*", gcsControllers.getFile);
 app.post("/files", gcsControllers.postFile);
-app.put("/files/:name", gcsControllers.putFile);
+app.put("/files/*", gcsControllers.putFile);
 app.delete("/files", gcsControllers.deleteFiles);
-app.delete("/files/:name", gcsControllers.deleteFile);
+app.delete("/files/*", gcsControllers.deleteFile);
 app.use(gcsErrorHandler);
 
 /* AWS S3 */
 const s3Controllers = require("./controllers/aws-s3");
 const { awsS3ErrorHandler } = require("./middleware/aws-s3");
 app.get("/s3/files", s3Controllers.getFilesList);
-app.get("/s3/files/:name", s3Controllers.getFile);
+app.get("/s3/files/*", s3Controllers.getFile);
 app.post("/s3/files", s3Controllers.postFile);
-app.put("/s3/files/:name", s3Controllers.putFile);
+app.put("/s3/files/*", s3Controllers.putFile);
 app.delete("/s3/files", s3Controllers.deleteFiles);
-app.delete("/s3/files/:name", s3Controllers.deleteFile);
+app.delete("/s3/files/*", s3Controllers.deleteFile);
 app.use(awsS3ErrorHandler);
 
 /* Google Drive */
@@ -50,11 +50,11 @@ const { googleDriveErrorHandler } = require("./middleware/google-drive");
 const { GOOGLE_DRIVE_UPLOAD_LIMIT } = require("./lib/google-drive");
 app.use(express.json({ limit: GOOGLE_DRIVE_UPLOAD_LIMIT }));
 app.get("/drive/files", googleDriveControllers.getFilesList);
-app.get("/drive/files/:id", googleDriveControllers.getFile);
+app.get("/drive/files/*", googleDriveControllers.getFile);
 app.post("/drive/files", googleDriveControllers.postFile);
-app.put("/drive/files/:id", googleDriveControllers.putFile);
+app.put("/drive/files/*", googleDriveControllers.putFile);
 app.delete("/drive/files", googleDriveControllers.deleteFiles);
-app.delete("/drive/files/:id", googleDriveControllers.deleteFile);
+app.delete("/drive/files/*", googleDriveControllers.deleteFile);
 app.use(googleDriveErrorHandler);
 
 app.use(serverErrorHandler);

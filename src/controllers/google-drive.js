@@ -41,7 +41,7 @@ const getFilesList = async (req, res, next) => {
 
 const getFile = async (req, res, next) => {
   const { params } = req;
-  const { id } = params;
+  const id = params[0];
   try {
     const response = await tryGoogleDriveAction(
       gdGetFile(id),
@@ -76,7 +76,7 @@ const postFile = async (req, res, next) => {
 
 const putFile = async (req, res, next) => {
   const { params, body, files } = req;
-  const { id } = params;
+  const id = params[0];
 
   const file = files?.file || files?.body;
   const data = file?.data || body.file || body.data || body.body;
@@ -95,7 +95,7 @@ const putFile = async (req, res, next) => {
 
 const deleteFile = async (req, res, next) => {
   const { params } = req;
-  const { id } = params;
+  const id = params[0];
   try {
     const response = await tryGoogleDriveAction(
       gdDeleteFile(id),
