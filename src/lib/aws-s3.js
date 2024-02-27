@@ -7,6 +7,8 @@ const {
   DeleteObjectsCommand,
 } = require("@aws-sdk/client-s3");
 
+const S3_UPLOAD_LIMIT = "50MB";
+
 const Bucket = process.env.S3_BUCKET_NAME;
 
 const s3Client = new S3Client();
@@ -38,6 +40,7 @@ const deleteFiles = async (Prefix) => {
 };
 
 module.exports = {
+  S3_UPLOAD_LIMIT,
   listFiles,
   getFile,
   saveFile,

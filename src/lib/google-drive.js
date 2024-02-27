@@ -1,7 +1,7 @@
 const { Readable } = require("stream");
 const { google } = require("googleapis");
 
-const GOOGLE_DRIVE_UPLOAD_LIMIT = "5mb";
+const GDRIVE_UPLOAD_LIMIT = "5MB";
 
 let googleDriveClient;
 const initializeGoogleDriveClient = async () => {
@@ -49,7 +49,7 @@ const deleteFile = async (fileId) => {
 };
 
 module.exports = {
-  GOOGLE_DRIVE_UPLOAD_LIMIT,
+  GDRIVE_UPLOAD_LIMIT,
   listFiles,
   getFile,
   createFile,

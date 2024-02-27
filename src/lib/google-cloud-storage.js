@@ -1,5 +1,7 @@
 const { Storage } = require("@google-cloud/storage");
 
+const GCS_UPLOAD_LIMIT = "50MB";
+
 const { GCS_BUCKET } = process.env;
 
 const storage = new Storage();
@@ -30,6 +32,7 @@ const deleteFiles = async (matchGlob) => {
 };
 
 module.exports = {
+  GCS_UPLOAD_LIMIT,
   listFiles,
   getFileMetadata,
   getFileStream,
