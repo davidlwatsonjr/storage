@@ -4,7 +4,11 @@
   "description": "File storage service",
   "main": "src/index.js",
   "scripts": {
+    "predeploy": "gcloud config set project davidlwatsonjr && gcloud -q artifacts docker images delete us-east1-docker.pkg.dev/davidlwatsonjr/cloud-run-source-deploy/storage --delete-tags",
+    "deploy": "gcloud run deploy storage --source .",
+    "postdeploy": "gsutil -m rm -r gs://davidlwatsonjr_cloudbuild/**",
     "docker:build": "docker build -t storage .",
+    "predocker:start": "npm run docker:build",
     "docker:start": "docker run -p 8080:8080 storage",
     "dev": "node --watch src/index.js",
     "eslint": "eslint",
