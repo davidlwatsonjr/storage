@@ -1,3 +1,15 @@
+const { SECRETS } = process.env;
+if (SECRETS) {
+  try {
+    const secrets = JSON.parse(SECRETS.replace(/\n/g, ""));
+    Object.keys(secrets).forEach((key) => {
+      process.env[key] = secrets[key];
+    });
+  } catch (e) {
+    console.error("Error parsing SECRETS JSON", e);
+  }
+}
+
 const express = require("express");
 const fileUpload = require("express-fileupload");
 const {
@@ -17,7 +29,7 @@ app.get("/ping", async (req, res) => {
   res.send("pong");
 });
 
-app.use(authAPIRequest);
+app.use(authAPIRequest("STORAGE"));
 
 /* Google Cloud Storage */
 const gcsControllers = require("./controllers/google-cloud-storage");
